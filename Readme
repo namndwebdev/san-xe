@@ -1,0 +1,19 @@
+bonbanh.com - searchText:string='seltos','kia morning' => chọn select
+-address:'ha-noi'
+
+- page:number=1,2,3,4....
+  -lấy hết trang thì ngừng (tìm theo thành phố , ~ 400tin)
+
+chotot -search:string='seltos','kia morning' => tìm Search
+-address:string='Hải Phòng','Hà Nội'
+page:number=1,2,3,4
+-lấy hết trang thì ngừng (tầm 9\*15 tin)
+
+oto.com.vn -search:string='kiamorning','kia seltos' => Chọn select
+-address:string='ha-noi'
+-lấy 15 trang ~~ 450 tin
+
+xetot.com -search:string='kiamorning','kia seltos' => Tìm search nhưng rất lâu, chỉ nên search tên xe
+-address:string='ha-noi'
+page:number:1,2,3,4....
+-lấy hết trang (tìm theo thành phố , ~ 400tin)
