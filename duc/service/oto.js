@@ -1,9 +1,5 @@
 var axios = require("axios");
 var cheerio = require("cheerio");
-let search = "hyundai creta";
-let address = "ha-noi";
-let page = 0;
-const MAX_PAGE = 15;
 function getNameOf($, cItem) {
   return $(cItem).find(".info-left").find("a").attr("title");
 }
@@ -13,7 +9,6 @@ function getPriceOf($, cItem) {
 function getImageOf($, cItem) {
   return $(cItem).find(".photo").find(".lozad").attr("data-src");
 }
-
 function getUrlDetailOf($, cItem) {
   return "https://oto.com.vn/" + $(cItem).find(".photo").find("a").attr("href");
 }
@@ -32,13 +27,22 @@ function getAddressOf($, cItem) {
   return address[1];
 }
 
-function getpage(search, address, page) {
+function getPage(search, address, page) {
   return axios
     .get(`https://oto.com.vn/mua-ban-xe-${search}-${address}/p${page}`)
     .then((res) => {
+      return res.data
+    })  
+    .catch((error) => {
+      console.log("getPage ERR oto.com", error);
+    });
+}
+
+function fetchDataFormHtmlPageList(listRes){
+  let listPromise = [];
+  listRes.forEach(function (htmlPage) {
       let newData = [];
-      let listPromise = [];
-      const $ = cheerio.load(res.data);
+      const $ = cheerio.load(htmlPage);
       let cars = $(".item-car");
       cars.each(function (i, car) {
         let p = axios(getUrlDetailOf($, car)).then((res) => {
@@ -53,27 +57,8 @@ function getpage(search, address, page) {
         });
         listPromise.push(p);
       });
-      return Promise.all(listPromise);
-    })
-    .catch((error) => { 
-      console.log("getPage ERR oto.com", error);
-      // 
-    });
-}
+  });
 
-async function fetchData({ search, address }) {
-  let data = [];
-  while (true) {
-    page++;
-    let kq = await getpage(search, address, page);
-    if (page <= MAX_PAGE) {
-      if (kq) {
-        data = data.concat(kq);
-      }
-    } else {
-      break;
-    }
-  }
-  return data;
+  return Promise.all(listPromise);
 }
-module.exports = { fetchData };
+module.exports = { getPage, fetchDataFormHtmlPageList };

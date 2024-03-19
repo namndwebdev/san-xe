@@ -1,7 +1,7 @@
 var axios = require("axios");
 var cheerio = require("cheerio");
 let data = [];
-let searchText = "creta";
+let searchText = "kia";
 let address = "ha-noi";
 //call API list cars
 async function getPage(page) {
@@ -16,7 +16,6 @@ async function getPage(page) {
       let image = $(".archive-thumb").find("img");
       let address = $(".car-info").find(".hight-light-simi-bold");
       let number = $(".call-action").find(".phone-content");
-
       name.each(function (i, name) {
         data[i] = { name: $(name).text() };
       });
@@ -45,16 +44,15 @@ async function getPage(page) {
         data[i] = {
           ...data[i],
           urlDetail: "https://xetot.com" + $(url).attr("href"),
+          web: "xetot"
         };
       });
-
       return data;
     })
     .catch((err) => {
       console.log("getPage ERR xetot ", err);
     });
 }
-
 function getTotalPage(page) {
   return axios
     .get(
@@ -81,8 +79,10 @@ function getTotalPage(page) {
     });
 }
 
-getTotalPage()
+// lấy dữ liệu
+getTotalPage() 
   .then((totalPage) => {
+    console.log(totalPage)
     let arrPromise = [];
     for (let i = 1; i <= totalPage; i++) {
       arrPromise.push(getPage(i));

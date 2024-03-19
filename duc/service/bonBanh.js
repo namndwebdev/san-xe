@@ -2,8 +2,7 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 //////////////////////////////////////////////////
 let data = [];
-let searchText = "kia morning";
-let address = "Hà Nội";
+
 function getNameOf($, cItem) {
   return $(cItem).find('[itemprop="name"]').text();
 }
@@ -50,14 +49,13 @@ function change_alias(alias) {
 
 //call API list cars
 async function getPage(search, address, page) {
-  return await axios
+  return axios
     .get(
       `https://bonbanh.com/${change_alias(address)}/oto/${search}/page,${page}`
     )
     .then((res) => {
       const $ = cheerio.load(res.data);
       let cars = $(".car-item");
-      console.log(cars)
       cars.each(function (i, car) {
         data[i] = {
           name: getNameOf($, car),
@@ -66,6 +64,7 @@ async function getPage(search, address, page) {
           address: getAddressOf($, car),
           phonenumber: getPhoneNumberOf($, car),
           urlDetail: getLinkDetailOf($, car),
+          web: "bonbanh",
         };
       });
       return data;
@@ -91,36 +90,7 @@ function getTotalPage(search, address) {
     });
 }
 
-function fetchData({ search, address }) {
-  return getTotalPage(search, address)
-    .then((totalPage) => {
-      let arrPromise = [];
-      for (let i = 1; i <= totalPage; i++) {
-        arrPromise.push(getPage(search, address, i));
-      }
-      return Promise.all(arrPromise);
-    })
-    .then((data) => {
-      data = data.reduce((total, item) => {
-        return total.concat(item);
-      });
-      data = data
-        .sort((a, b) => {
-          return a.price - b.price;
-        })
-        .map((item) => {
-          let newPrice = Number(item.price).toLocaleString("vi", {
-            style: "currency",
-            currency: "VND",
-          });
-          return { ...item, price: newPrice };
-        });
-      return data;
-    })
-    .catch((err) => {
-      console.log("getTotalPage ERR bonbanh", err);
-    });
-}
 module.exports = {
-  fetchData,
+  getTotalPage,
+  getPage,
 };
