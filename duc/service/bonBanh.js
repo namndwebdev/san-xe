@@ -18,7 +18,7 @@ function getAddressOf($, cItem) {
 function getPhoneNumberOf($, cItem) {
   let regex = /(01|03|05|07|08|09)[.\d\s+]{7,15}/g;
   let stringNumber = $(cItem).find(".cb7").text().trim().split(" ").join("");
-  let NumberPhone = stringNumber.match(regex);
+  let NumberPhone = stringNumber.match(regex).join("")
   return NumberPhone;
 }
 function getLinkDetailOf($, cItem) {
